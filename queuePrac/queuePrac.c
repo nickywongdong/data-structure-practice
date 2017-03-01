@@ -65,6 +65,7 @@ int dequeue(struct queue *myQueue){
 		printf("Popping %d off the queue...\n", myQueue->head->next->val);
 		myQueue->head->next = myQueue->head->next->next;
 		temp->next->prev = myQueue->head;
+		free(temp);
 		myQueue->size--;
 	}
 }
@@ -81,7 +82,14 @@ void testPrint(struct queue *myQueue){
 
 //destroys the queue with good memory management
 void destroyQueue(struct queue *myQueue){
-
+	struct node *current = myQueue->head->next;
+	while(current != myQueue->tail){
+		myQueue->head->next = current->next;
+		free(current);
+		current = myQueue->head->next;
+	}
+	free(myQueue->head);
+	free(myQueue->tail);
 }
 
 
@@ -107,6 +115,12 @@ int main(){
 	//test the size is 0
 	assert(myQueue->size == 0);
 
+	//testing big numbers
+	for(i=0; i<50; i++){
+		enqueue(i, myQueue);
+	}
+	
+	//properly dispose of dynamic memory
 	destroyQueue(myQueue);
 
 	return 0;
